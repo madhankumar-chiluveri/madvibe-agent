@@ -13,36 +13,43 @@ logger = logging.getLogger(__name__)
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
-DEFAULT_MODEL = "openrouter/owl-alpha"
+
+# Best free models with confirmed tool/function-calling support on OpenRouter
+DEFAULT_MODEL = "meta-llama/llama-3.3-70b-instruct:free"
 LLM_MODEL = os.getenv("LLM_MODEL", DEFAULT_MODEL)
 
+# Free models known to support tool calling well
 DEFAULT_FREE_FALLBACK_MODELS = (
-    "inclusionai/ring-2.6-1t:free",
-    "nvidia/nemotron-3-super-120b-a12b:free",
-    "poolside/laguna-m.1:free",
-    "poolside/laguna-xs.2:free",
-    "baidu/cobuddy:free",
-    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+    "meta-llama/llama-3.1-8b-instruct:free",      # fast, tool calling ok
+    "deepseek/deepseek-v3-0324:free",              # good tool calling
+    "qwen/qwen3-30b-a3b:free",                     # good tool calling
+    "mistralai/mistral-7b-instruct:free",           # basic tool calling
+    "google/gemma-3-12b-it:free",                  # decent tool calling
 )
 
 DEFAULT_PAID_FALLBACK_MODELS = (
-    "deepseek/deepseek-v4-flash",
-    "google/gemini-3-flash-preview",
-    "moonshotai/kimi-k2.6",
-    "anthropic/claude-sonnet-4.6",
-    "openai/gpt-5.4",
+    "deepseek/deepseek-chat",
+    "google/gemini-flash-1.5",
+    "anthropic/claude-3-haiku",
 )
 
 LEGACY_MODEL_ALIASES = {
-    "meta-llama/llama-3.3-70b-instruct:free": DEFAULT_MODEL,
-    "meta-llama/llama-3.1-8b-instruct:free": DEFAULT_MODEL,
-    "nvidia/llama-3.1-nemotron-70b-instruct:free": "nvidia/nemotron-3-super-120b-a12b:free",
-    "baidu/qianfan-cobuddy:free": "baidu/cobuddy:free",
-    "owl/alpha:free": "openrouter/owl-alpha",
-    "nvidia/nemotron-3-nano-omni:free": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
-    "poolside/laguna-xs-2:free": "poolside/laguna-xs.2:free",
-    "poolside/laguna-m-1:free": "poolside/laguna-m.1:free",
-    "deepseek/deepseek-v4-flash:free": DEFAULT_MODEL,
+    # Map any stale/non-tool-calling models to safe defaults
+    "openrouter/owl-alpha": DEFAULT_MODEL,
+    "owl/alpha:free": DEFAULT_MODEL,
+    "inclusionai/ring-2.6-1t:free": DEFAULT_MODEL,
+    "baidu/qianfan-cobuddy:free": DEFAULT_MODEL,
+    "baidu/cobuddy:free": DEFAULT_MODEL,
+    "nvidia/nemotron-3-nano-omni:free": "meta-llama/llama-3.1-8b-instruct:free",
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free": "meta-llama/llama-3.1-8b-instruct:free",
+    "nvidia/nemotron-3-super-120b-a12b:free": DEFAULT_MODEL,
+    "nvidia/llama-3.1-nemotron-70b-instruct:free": DEFAULT_MODEL,
+    "poolside/laguna-xs-2:free": "deepseek/deepseek-v3-0324:free",
+    "poolside/laguna-xs.2:free": "deepseek/deepseek-v3-0324:free",
+    "poolside/laguna-m-1:free": "deepseek/deepseek-v3-0324:free",
+    "poolside/laguna-m.1:free": "deepseek/deepseek-v3-0324:free",
+    "deepseek/deepseek-v4-flash:free": "deepseek/deepseek-v3-0324:free",
+    "deepseek/deepseek-r1:free": "deepseek/deepseek-v3-0324:free",
 }
 
 

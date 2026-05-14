@@ -225,7 +225,10 @@ async def chat(
             user_id=request.user_id,
         )
     except Exception as exc:
-        logger.exception("Agent error after model fallback: %s", exc)
+        logger.error(
+            "Agent error after model fallback. Type: %s | Detail: %s",
+            type(exc).__name__, repr(exc), exc_info=True
+        )
         status = _openrouter_status_code(exc)
         retry_after = _openrouter_retry_after(exc)
         headers = {"Retry-After": retry_after} if retry_after else None
@@ -233,20 +236,20 @@ async def chat(
         if status in {429, 500, 502, 503, 504}:
             raise HTTPException(
                 status_code=503,
-                detail="OpenRouter is rate-limiting or has no healthy upstream for the configured models. Try again shortly or choose another model.",
+                detail=f"OpenRouter unavailable (status={status}). Try again shortly or choose another model.",
                 headers=headers,
             ) from exc
 
         if status in {400, 402, 404}:
             raise HTTPException(
                 status_code=502,
-                detail="The selected OpenRouter model is unavailable for this key. Maddy tried its configured fallbacks but could not complete the request.",
+                detail=f"OpenRouter model unavailable (status={status}). All fallbacks exhausted.",
                 headers=headers,
             ) from exc
 
         raise HTTPException(
             status_code=500,
-            detail="Agent encountered an error. Try rephrasing.",
+            detail=f"Agent error: {type(exc).__name__}: {str(exc)[:200]}",
             headers=headers,
         ) from exc
 

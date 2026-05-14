@@ -50,13 +50,11 @@ class ConvexClient:
         url = f"{self.base_url}/{endpoint}"
         payload = {"path": path, "args": args, "format": "json"}
         logger.info("Convex %s %s", endpoint.upper(), path)
-        headers = dict(_HEADERS)
-        if token := convex_token_var.get():
-            headers["Authorization"] = f"Bearer {token}"
-            
+        # Always use the deploy key — it has full server-side access.
+        # The user token is NOT needed here; the agent acts on behalf of the workspace.
         try:
             async with httpx.AsyncClient(timeout=20.0) as client:
-                r = await client.post(url, json=payload, headers=headers)
+                r = await client.post(url, json=payload, headers=_HEADERS)
                 r.raise_for_status()
                 data = r.json()
                 return data.get("value", data)
