@@ -89,6 +89,7 @@ class ChatRequest(BaseModel):
     model: str = DEFAULT_MODEL
     conversation_id: str | None = None
     convex_token: str | None = None
+    page_id: str | None = None  # current page the user has open (None = workspace overview)
 
 
 class ChatResponse(BaseModel):
@@ -154,6 +155,7 @@ async def _invoke_agent_with_model_fallback(
     requested_model: str,
     workspace_id: str,
     user_id: str,
+    page_id: str | None = None,
 ) -> tuple[dict[str, Any], str]:
     candidates = get_model_candidates(requested_model)
     last_exc: Exception | None = None
@@ -163,6 +165,7 @@ async def _invoke_agent_with_model_fallback(
             model=candidate,
             workspace_id=workspace_id,
             user_id=user_id,
+            page_id=page_id,
         )
 
         try:
@@ -223,6 +226,7 @@ async def chat(
             requested_model=request.model,
             workspace_id=request.workspace_id,
             user_id=request.user_id,
+            page_id=request.page_id,
         )
     except Exception as exc:
         logger.error(

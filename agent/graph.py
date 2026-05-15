@@ -24,7 +24,7 @@ _PROMPT_TEMPLATE = (
 ).read_text(encoding="utf-8")
 
 
-def build_graph(model: str | None = None, workspace_id: str = "", user_id: str = ""):
+def build_graph(model: str | None = None, workspace_id: str = "", user_id: str = "", page_id: str | None = None):
     """Build and return a compiled LangGraph ReAct agent.
 
     We rebuild per-request only when workspace context differs.
@@ -34,6 +34,7 @@ def build_graph(model: str | None = None, workspace_id: str = "", user_id: str =
     system_prompt = _PROMPT_TEMPLATE.format(
         workspace_id=workspace_id,
         user_id=user_id,
+        current_page_id=page_id or "none",
     )
 
     return create_react_agent(
